@@ -104,11 +104,75 @@ void on_salt_pepper_clicked(GtkWidget * button, gpointer * gpointer_ptr) {
     }
 }
 
-void on_gauss_clicked(GtkWidget * button, gpointer * gpointer_ptr) {
-    g_print("You pressed Gauss\n");
+void set_tab_gausian(int *tab) {
+    tab[0] = 1;
+    tab[1] = 2;
+    tab[2] = 1;
+    tab[3] = 2;
+    tab[4] = 4;
+    tab[5] = 2;
+    tab[6] = 1;
+    tab[7] = 2;
+    tab[8] = 1;
+}
+
+void create_spin_buttons_for_grid(GtkSpinButton * spin_button[],
+				  GtkGrid * grid) {
+    int i;
+    GtkAdjustment *genetic_adjusment[9];
+    for (i = 0; i < 9; i++)
+	genetic_adjusment[i] = gtk_adjustment_new(1, -10, 10, 1, -1, 0);
+    for (i = 0; i < 9; i++)
+	spin_button[i] = gtk_spin_button_new(genetic_adjusment[i], 1.0, 0);
+    for (i = 0; i < 9; i++)
+	gtk_grid_attach(grid,
+			GTK_WIDGET(spin_button[i]), i % 3, i / 3, 1, 1);
+}
+
+void get_spin_buttons_to_tab(GtkSpinButton * spin_button[], int *tab) {
+    int i;
+    for (i = 0; i < 9; i++)
+	tab[i] = gtk_spin_button_get_value_as_int (spin_button[i]);
+}
+
+void on_genetic_clicked(GtkWidget * button, gpointer * gpointer_ptr) {
+    g_print("You pressed Genetic Filter\n");
+    int tab[9] = { 0 };
+    GtkWidget *genetic_window, *genetic_content_area;
+    GtkSpinButton *genetic_spin_button[9];
+    GtkGrid *genetic_grid = gtk_grid_new();
     struct data *data_ptr = (struct data *) gpointer_ptr;
     if (data_ptr->file_open) {
-	picture_generic_filter(data_ptr->picture_ptr, true);
+	genetic_window =
+	    gtk_dialog_new_with_buttons("Genetic Filter", data_ptr->window,
+					GTK_DIALOG_MODAL,
+					_("_Gauss"), GTK_RESPONSE_YES,
+					_("_Ok"), GTK_RESPONSE_APPLY,
+					NULL);
+	g_signal_connect_swapped(genetic_window, "destroy",
+				 G_CALLBACK(gtk_widget_destroy),
+				 genetic_window);
+	genetic_content_area =
+	    gtk_dialog_get_content_area(GTK_DIALOG(genetic_window));
+	gtk_container_add(GTK_CONTAINER(genetic_content_area),
+			  GTK_WIDGET(genetic_grid));
+	gtk_grid_set_column_homogeneous(genetic_grid, TRUE);
+	gtk_grid_set_row_homogeneous(genetic_grid, TRUE);
+	gtk_grid_set_column_spacing(genetic_grid, 3);
+	gtk_grid_set_row_spacing(genetic_grid, 7);
+
+	create_spin_buttons_for_grid(genetic_spin_button, genetic_grid);
+
+	gtk_widget_show_all(genetic_window);
+	gint resp = gtk_dialog_run(GTK_DIALOG(genetic_window));
+	if (resp == GTK_RESPONSE_YES) {
+	    set_tab_gausian(tab);
+	    picture_generic_filter(data_ptr->picture_ptr, tab);
+	} else if (resp == GTK_RESPONSE_APPLY) {
+	    get_spin_buttons_to_tab(genetic_spin_button, tab);
+	    picture_generic_filter(data_ptr->picture_ptr, tab);
+	}
+	gtk_widget_destroy(genetic_window);
 	reload_picture(data_ptr);
     }
 }

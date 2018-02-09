@@ -143,12 +143,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="gauss">
-                    <property name="label" translatable="yes">Gauss Filter</property>
+                  <object class="GtkButton" id="genetic">
+                    <property name="label" translatable="yes">Genetic Filter</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="on_gauss_clicked" swapped="no"/>
+                    <signal name="clicked" handler="on_genetic_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>

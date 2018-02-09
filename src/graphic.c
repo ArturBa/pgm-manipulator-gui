@@ -330,7 +330,8 @@ void picture_resize(picture * const picture_ptr, int new_value) {
     if ((double) new_width / picture_ptr->width * picture_ptr->height >
 	new_value) {
 	new_height = new_value;
-	new_width = (double)new_value / picture_ptr->height * picture_ptr->width;
+	new_width =
+	    (double) new_value / picture_ptr->height * picture_ptr->width;
     } else {
 	new_height =
 	    (double) new_width / picture_ptr->width * picture_ptr->height;
@@ -409,12 +410,21 @@ double *picture_histogram_array(picture * const picture_ptr) {
     return histogram_array;
 }
 
-void picture_generic_filter(picture * const picture_ptr, bool is_gausian) {
-    short int filter[9] = { 1, 2, 1, 2, 4, 2, 1, 2, 1 }, i, j;
-    int buffor;
+void picture_generic_filter(picture * const picture_ptr, int filter[]) {
+    double buffor;
+    short int i,j;
     unsigned short int **const picture_tab =
 	malloc((picture_ptr->height - 2) * sizeof(*picture_tab));
 
+    if (picture_ptr->height < 3 || picture_ptr->width < 3) {
+	free(picture_tab);
+	return;
+    }
+  if(filter[0] + filter[1] + filter[2] + filter[3] + filter[4] +
+	       filter[5] + filter[6] + filter[7] + filter[8] == 0){
+    free(picture_tab);
+    return;
+  }
     if (picture_tab == NULL) {
 	fprintf(stderr, "ERROR. Allocation memory problem\n");
 	getchar();
@@ -429,23 +439,6 @@ void picture_generic_filter(picture * const picture_ptr, bool is_gausian) {
 	    exit(1);
 	}
     }
-    if (is_gausian == false) {
-	do {
-	    for (i = 0; i < 9; i++) {
-		printf("Type in %d:%d filter value: ", i / 3 + 1,
-		       i % 3 + 1);
-		if (scanf("%hd", &filter[i]) == 1)
-		    continue;
-		else {
-		    i--;
-		    continue;
-		}
-	    }
-	}
-	while (filter[0] + filter[1] + filter[2] + filter[3] + filter[4] +
-	       filter[5] + filter[6] + filter[7] + filter[8] == 0);
-    }
-
     for (i = 1; i < picture_ptr->height - 1; i++) {
 	for (j = 1; j < picture_ptr->width - 1; j++) {
 	    buffor = 0;

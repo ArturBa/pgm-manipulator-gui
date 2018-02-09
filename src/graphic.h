@@ -31,7 +31,7 @@ void picture_mediana_filter(picture * const);
 void picture_salt_pepper_hum(picture * const);
 void picture_proging(picture * const, int new_grey_value);
 void picture_resize(picture * const, int);
-void picture_generic_filter(picture * const, bool);	//if bool==true is gausian
+void picture_generic_filter(picture * const, int*);
 picture *create_histogram_pgm(picture * picture_ptr, int);
 void picture_copy(picture *, picture *);
 void array_2D_copy(unsigned short int **, unsigned short int **, double,
